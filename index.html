@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Financial Aid Calculator</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script>
+        function calculate() {
+            let membership = parseInt(document.getElementById('membership').value);
+            let family_size = parseInt(document.getElementById('family_size').value);
+            let income = parseInt(document.getElementById('income').value);
+
+            // Make a request to the server to calculate the result
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://127.0.0.1:8000', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let result = JSON.parse(xhr.responseText).result;
+                    document.getElementById('result').innerText = 'Calculated Monthly Rate: ' + result;
+                }
+            };
+            let data = JSON.stringify({membership: membership, family_size: family_size, income: income});
+            xhr.send(data);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Financial Aid Calculator</h1>
+        <form onsubmit="event.preventDefault(); calculate();">
+            <label for="membership">Membership:</label>
+            <select id="membership">
+                <option value="1">Single</option>
+                <option value="2">1 Adult Household</option>
+                <option value="3">2 Adult Household</option>
+            </select><br><br>
+            <label for="family_size">Family Size:</label>
+            <input type="number" id="family_size" min="1" required><br><br>
+            <label for="income">Household Income:</label>
+            <input type="number" id="income" min="0" required><br><br>
+            <button type="submit">Calculate</button><br><br>
+        </form>
+        <div id="result"></div>
+    </div>
+</body>
+</html>
